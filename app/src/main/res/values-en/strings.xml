@@ -42,7 +42,10 @@
     <string name="scraper_dialog_btn_try_anyway">Try Anyway</string>
     <string name="scraper_dialog_not_found_title">No Posts Found</string>
     <string name="scraper_dialog_not_found_msg">Threads search for keyword \'%1$s\' did not return root posts.\n\nTips:\n1. Verify active login in Settings tab.\n2. Try a broader keyword or paste a link directly.</string>
-    <string name="scraper_toast_success">Successfully added %1$d authentic Threads posts to queue!</string>
+    <string name="scraper_toast_success">Successfully added %1$d real Threads posts to queue!</string>
+    <string name="scraper_age_just_added">Just added</string>
+    <string name="scraper_toast_already_commented">This post has already been commented on previously.</string>
+    <string name="scraper_status_extracting">Extracting post data &amp; metrics...</string>
     <string name="btn_view_post">View Post</string>
     <string name="btn_remove">Remove</string>
 

@@ -48,37 +48,37 @@ class ThreadsClient(private val context: Context) {
     suspend fun postComment1(postUrl: String, text: String, mediaUris: String): Result<String> =
         withContext(Dispatchers.IO) {
             try {
-                if (prefs.threadsCookie.isNotBlank()) {
-                    val form = FormBody.Builder()
-                        .add("text", text)
-                        .add("target_url", postUrl)
-                        .add("media_uris", mediaUris)
-                        .build()
-
-                    val req = Request.Builder()
-                        .url("https://www.threads.com/api/graphql")
-                        .addHeader("Cookie", prefs.threadsCookie)
-                        .addHeader("x-ig-app-id", "238260118697367")
-                        .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36")
-                        .post(form)
-                        .build()
-
-                    val response = client.newCall(req).execute()
-                    val body = response.body?.string() ?: ""
-
-                    if (checkActionBlock(response.code, body)) {
-                        return@withContext Result.failure(ActionBlockException("Threads membatasi aksi (Action Block / Challenge Terdeteksi)!"))
-                    }
-
-                    if (response.isSuccessful) {
-                        val commentId = "c1_${System.currentTimeMillis()}"
-                        return@withContext Result.success(commentId)
-                    }
+                if (prefs.threadsCookie.isBlank()) {
+                    return@withContext Result.failure(Exception("Sesi login Threads belum aktif. Harap login terlebih dahulu di tab Pengaturan."))
                 }
 
-                delay(1200)
-                val simulatedId = "c1_${System.currentTimeMillis()}"
-                Result.success(simulatedId)
+                val form = FormBody.Builder()
+                    .add("text", text)
+                    .add("target_url", postUrl)
+                    .add("media_uris", mediaUris)
+                    .build()
+
+                val req = Request.Builder()
+                    .url("https://www.threads.com/api/graphql")
+                    .addHeader("Cookie", prefs.threadsCookie)
+                    .addHeader("x-ig-app-id", "238260118697367")
+                    .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36")
+                    .post(form)
+                    .build()
+
+                val response = client.newCall(req).execute()
+                val body = response.body?.string() ?: ""
+
+                if (checkActionBlock(response.code, body)) {
+                    return@withContext Result.failure(ActionBlockException("Threads membatasi aksi (Action Block / Challenge Terdeteksi)!"))
+                }
+
+                if (response.isSuccessful) {
+                    val commentId = "c1_${System.currentTimeMillis()}"
+                    return@withContext Result.success(commentId)
+                } else {
+                    return@withContext Result.failure(Exception("Gagal kirim komentar (HTTP ${response.code})"))
+                }
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -87,36 +87,36 @@ class ThreadsClient(private val context: Context) {
     suspend fun postComment2Reply(comment1Id: String, text: String): Result<String> =
         withContext(Dispatchers.IO) {
             try {
-                if (prefs.threadsCookie.isNotBlank()) {
-                    val form = FormBody.Builder()
-                        .add("text", text)
-                        .add("reply_to_comment_id", comment1Id)
-                        .build()
-
-                    val req = Request.Builder()
-                        .url("https://www.threads.com/api/graphql")
-                        .addHeader("Cookie", prefs.threadsCookie)
-                        .addHeader("x-ig-app-id", "238260118697367")
-                        .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36")
-                        .post(form)
-                        .build()
-
-                    val response = client.newCall(req).execute()
-                    val body = response.body?.string() ?: ""
-
-                    if (checkActionBlock(response.code, body)) {
-                        return@withContext Result.failure(ActionBlockException("Threads membatasi aksi (Action Block Terdeteksi)!"))
-                    }
-
-                    if (response.isSuccessful) {
-                        val commentId = "c2_${System.currentTimeMillis()}"
-                        return@withContext Result.success(commentId)
-                    }
+                if (prefs.threadsCookie.isBlank()) {
+                    return@withContext Result.failure(Exception("Sesi login Threads belum aktif."))
                 }
 
-                delay(1000)
-                val simulatedId = "c2_${System.currentTimeMillis()}"
-                Result.success(simulatedId)
+                val form = FormBody.Builder()
+                    .add("text", text)
+                    .add("reply_to_comment_id", comment1Id)
+                    .build()
+
+                val req = Request.Builder()
+                    .url("https://www.threads.com/api/graphql")
+                    .addHeader("Cookie", prefs.threadsCookie)
+                    .addHeader("x-ig-app-id", "238260118697367")
+                    .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36")
+                    .post(form)
+                    .build()
+
+                val response = client.newCall(req).execute()
+                val body = response.body?.string() ?: ""
+
+                if (checkActionBlock(response.code, body)) {
+                    return@withContext Result.failure(ActionBlockException("Threads membatasi aksi (Action Block Terdeteksi)!"))
+                }
+
+                if (response.isSuccessful) {
+                    val commentId = "c2_${System.currentTimeMillis()}"
+                    return@withContext Result.success(commentId)
+                } else {
+                    return@withContext Result.failure(Exception("Gagal kirim komentar 2 (HTTP ${response.code})"))
+                }
             } catch (e: Exception) {
                 Result.failure(e)
             }

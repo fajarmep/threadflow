@@ -36,7 +36,6 @@ class ScraperFragment : Fragment() {
     private lateinit var prefs: AppPreferences
     private lateinit var threadsClient: ThreadsClient
     private lateinit var adapter: TargetPostAdapter
-    private var scraperWebView: WebView? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -146,9 +145,8 @@ class ScraperFragment : Fragment() {
         val postId = match.groupValues[2]
         val cleanUrl = "https://www.threads.com/@$author/post/$postId"
 
-        // Deduplication guard
         if (db.isPostAlreadyProcessed(postId)) {
-            Toast.makeText(context, "Postingan ini sudah pernah dikomentari sebelumnya.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, getString(R.string.scraper_toast_already_commented), Toast.LENGTH_LONG).show()
             return
         }
         if (db.isPostAlreadyQueued(postId)) {
@@ -165,7 +163,7 @@ class ScraperFragment : Fragment() {
             replyCount = 0,
             repostCount = 0,
             shareCount = 0,
-            postDate = "Baru ditambahkan"
+            postDate = getString(R.string.scraper_age_just_added)
         )
 
         val id = db.insertTargetPost(target)
@@ -186,19 +184,24 @@ class ScraperFragment : Fragment() {
         binding.tvScrapeStatus.text = getString(R.string.scraper_status_opening)
         binding.btnScrape.isEnabled = false
 
+        // Show live preview card — the WebView MUST be in layout with physical dimensions
+        // so Chromium actually renders the page and populates the DOM tree
+        binding.cardScraperPreview.visibility = View.VISIBLE
+        binding.layoutOverlay.visibility = View.VISIBLE
+        binding.tvOverlayStatus.text = getString(R.string.scraper_status_opening)
+
         val cookieManager = CookieManager.getInstance()
         cookieManager.setAcceptCookie(true)
 
-        if (scraperWebView == null) {
-            scraperWebView = WebView(requireContext()).apply {
-                settings.javaScriptEnabled = true
-                settings.domStorageEnabled = true
-                settings.userAgentString = "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
-                cookieManager.setAcceptThirdPartyCookies(this, true)
-            }
-        }
+        // Use the layout-embedded WebView (has physical dimensions → Chromium renders properly)
+        val liveWebView = binding.liveWebView
+        liveWebView.settings.javaScriptEnabled = true
+        liveWebView.settings.domStorageEnabled = true
+        liveWebView.settings.userAgentString =
+            "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
+        cookieManager.setAcceptThirdPartyCookies(liveWebView, true)
 
-        // Sync stored login cookies to both threads.com and threads.net
+        // Sync stored login cookies
         if (prefs.threadsCookie.isNotBlank()) {
             val parts = prefs.threadsCookie.split(";")
             for (p in parts) {
@@ -206,178 +209,201 @@ class ScraperFragment : Fragment() {
                 if (cookie.isNotEmpty()) {
                     cookieManager.setCookie("https://www.threads.com", cookie)
                     cookieManager.setCookie(".threads.com", cookie)
-                    cookieManager.setCookie("https://www.threads.net", cookie)
-                    cookieManager.setCookie(".threads.net", cookie)
                 }
             }
             cookieManager.flush()
         }
 
         val encoded = URLEncoder.encode(keyword, "UTF-8")
-        val searchUrl = "https://www.threads.com/search?q=$encoded"
+        val searchUrl = "https://www.threads.com/search?q=$encoded&filter=recent"
 
-        scraperWebView?.webViewClient = object : WebViewClient() {
+        liveWebView.webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                if (_binding == null) return
                 binding.tvScrapeStatus.text = getString(R.string.scraper_status_loading)
+                binding.tvOverlayStatus.text = getString(R.string.scraper_status_loading)
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
+                if (_binding == null) return
                 binding.tvScrapeStatus.text = getString(R.string.scraper_status_rendering)
+                binding.tvOverlayStatus.text = getString(R.string.scraper_status_rendering)
 
                 viewLifecycleOwner.lifecycleScope.launch {
-                    delay(3000)
+                    // Progressive scroll to trigger lazy-loading of React virtualized list
+                    for (i in 1..6) {
+                        if (_binding == null) return@launch
+                        liveWebView.evaluateJavascript("window.scrollBy(0, 800);", null)
+                        delay(1200)
+                    }
 
-                    // Scroll down to load search items
-                    scraperWebView?.evaluateJavascript("window.scrollBy(0, 1000);", null)
-                    delay(1500)
-                    scraperWebView?.evaluateJavascript("window.scrollBy(0, 1000);", null)
-                    delay(1200)
+                    if (_binding == null) return@launch
+                    binding.tvOverlayStatus.text = getString(R.string.scraper_status_extracting)
+                    delay(500)
 
-                    val extractJs = """
-                        (function() {
-                            function extractSvgMetric(card, keywords) {
-                                var svgs = card.querySelectorAll('svg');
-                                for (var s = 0; s < svgs.length; s++) {
-                                    var svg = svgs[s];
-                                    var titleAttr = (svg.getAttribute('title') || svg.getAttribute('aria-label') || '').toLowerCase();
-                                    var titleElem = svg.querySelector('title');
-                                    var titleText = titleElem ? titleElem.innerText.toLowerCase() : '';
-                                    var fullTitle = titleAttr + ' ' + titleText;
-
-                                    var matched = false;
-                                    for (var k = 0; k < keywords.length; k++) {
-                                        if (fullTitle.indexOf(keywords[k]) !== -1) {
-                                            matched = true;
-                                            break;
-                                        }
-                                    }
-                                    if (matched) {
-                                        var sib = svg.nextElementSibling;
-                                        if (!sib && svg.parentElement) sib = svg.parentElement.nextElementSibling;
-                                        if (sib) {
-                                            var txt = (sib.innerText || '').trim();
-                                            var m = txt.match(/([0-9.,]+)\s*([kKmM]?)/);
-                                            if (m) {
-                                                var n = parseFloat(m[1].replace(/,/g, '.'));
-                                                var u = (m[2] || '').toLowerCase();
-                                                if (u === 'k') n *= 1000;
-                                                else if (u === 'm') n *= 1000000;
-                                                return Math.round(n);
-                                            }
-                                        }
-                                    }
-                                }
-                                return 0;
-                            }
-
-                            var items = [];
-                            var seen = {};
-                            var links = document.querySelectorAll('a[href*="/post/"]');
-
-                            for (var i = 0; i < links.length; i++) {
-                                var a = links[i];
-                                var href = a.getAttribute('href') || '';
-                                var m = href.match(/\/@([a-zA-Z0-9._]+)\/post\/([a-zA-Z0-9_-]+)/);
-                                if (!m) continue;
-                                var author = m[1];
-                                var postId = m[2];
-                                if (seen[postId]) continue;
-                                seen[postId] = true;
-
-                                var card = a;
-                                for (var k = 0; k < 8; k++) {
-                                    if (!card || !card.parentElement) break;
-                                    card = card.parentElement;
-                                    if (card.getAttribute('data-pressable-container') === 'true' || card.tagName === 'ARTICLE') break;
-                                }
-                                if (!card) continue;
-
-                                // Filter ONLY ROOT POSTS: strictly skip comments & replies
-                                var cardText = (card.innerText || '');
-                                if (cardText.indexOf('Membalas @') !== -1 || cardText.indexOf('Replying to @') !== -1 ||
-                                    cardText.indexOf('Membalas ') === 0 || cardText.indexOf('Replying to ') === 0) {
-                                    continue;
-                                }
-
-                                // Skip items with vertical thread connector lines
-                                var connectors = card.querySelectorAll('div[style*="border-left"], div[style*="width: 2px"]');
-                                if (connectors.length > 0) continue;
-
-                                // Extract post content
-                                var text = '';
-                                var spans = card.querySelectorAll('span[dir="auto"], div[dir="auto"]');
-                                var parts = [];
-                                for (var s = 0; s < spans.length; s++) {
-                                    var val = (spans[s].innerText || '').trim();
-                                    if (val && val !== author && val.indexOf('@') !== 0 && val.length > 3) {
-                                        parts.push(val);
-                                    }
-                                }
-                                text = parts.join(' ');
-                                if (!text) text = cardText;
-
-                                // Post Age from <time> tag
-                                var timeEl = card.querySelector('time');
-                                var timeText = timeEl ? (timeEl.innerText || '') : '';
-                                var datetimeStr = timeEl ? (timeEl.getAttribute('datetime') || '') : '';
-                                var timestamp = datetimeStr ? Date.parse(datetimeStr) : 0;
-
-                                var ageStr = timeText;
-                                if (timestamp > 0) {
-                                    var diffSec = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
-                                    var min = Math.floor(diffSec / 60);
-                                    var hr = Math.floor(diffSec / 3600);
-                                    var day = Math.floor(diffSec / 86400);
-
-                                    if (min < 60) ageStr = min + 'm lalu';
-                                    else if (hr < 24) ageStr = hr + 'j lalu';
-                                    else if (day < 7) ageStr = day + 'h lalu';
-                                    else ageStr = Math.floor(day / 7) + 'mgg lalu';
-                                }
-                                if (!ageStr) ageStr = 'Baru saja';
-
-                                // Extract actual metrics from sibling DOM elements
-                                var likes = extractSvgMetric(card, ['like', 'suka']);
-                                var replies = extractSvgMetric(card, ['comment', 'balas', 'balasan']);
-                                var reposts = extractSvgMetric(card, ['repost', 'kirim']);
-
-                                var fullUrl = href.indexOf('http') === 0 ? href : ('https://www.threads.com' + href);
-
-                                items.push({
-                                    author: author,
-                                    postId: postId,
-                                    url: fullUrl,
-                                    text: text.slice(0, 500),
-                                    likes: likes,
-                                    replies: replies,
-                                    reposts: reposts,
-                                    shares: 0,
-                                    ageStr: ageStr,
-                                    timestamp: timestamp
-                                });
-                            }
-
-                            // Sort: Prioritise fresh & active posts (alive posts first)
-                            items.sort(function(a, b) {
-                                // Combined alive score: recency + engagement activity
-                                var scoreA = (a.timestamp / 1000) + (a.likes * 60) + (a.replies * 180);
-                                var scoreB = (b.timestamp / 1000) + (b.likes * 60) + (b.replies * 180);
-                                return scoreB - scoreA;
-                            });
-
-                            return JSON.stringify(items);
-                        })();
-                    """.trimIndent()
-
-                    scraperWebView?.evaluateJavascript(extractJs) { jsonStr ->
+                    val extractJs = buildExtractionJs()
+                    liveWebView.evaluateJavascript(extractJs) { jsonStr ->
                         processScrapedJson(jsonStr, keyword, maxLimit)
                     }
                 }
             }
         }
 
-        scraperWebView?.loadUrl(searchUrl)
+        liveWebView.loadUrl(searchUrl)
     }
+
+    /**
+     * Build JavaScript that extracts posts from Threads search DOM.
+     *
+     * Strategy: Find all <a href="/@user/post/id">. Climb parent DOM to find
+     * the post card container (identified by containing SVG action icons or
+     * data-virtualized attribute). Extract metrics from sibling spans next
+     * to SVG Like/Comment/Repost icons. Extract age from <time datetime>.
+     */
+    private fun buildExtractionJs(): String = """
+        (function() {
+            function getMetric(container, keywords) {
+                var svgs = container.querySelectorAll('svg');
+                for (var s = 0; s < svgs.length; s++) {
+                    var svg = svgs[s];
+                    var titleEl = svg.querySelector('title');
+                    var titleText = titleEl ? titleEl.textContent.toLowerCase() : '';
+                    var ariaLabel = (svg.getAttribute('aria-label') || '').toLowerCase();
+                    var svgTitle = (svg.getAttribute('title') || '').toLowerCase();
+                    var combined = titleText + ' ' + ariaLabel + ' ' + svgTitle;
+
+                    var matched = false;
+                    for (var k = 0; k < keywords.length; k++) {
+                        if (combined.indexOf(keywords[k]) !== -1) { matched = true; break; }
+                    }
+                    if (!matched) continue;
+
+                    var candidates = [];
+                    if (svg.nextElementSibling) candidates.push(svg.nextElementSibling);
+                    var p = svg.parentElement;
+                    if (p && p.nextElementSibling) candidates.push(p.nextElementSibling);
+                    if (p && p.parentElement && p.parentElement.nextElementSibling)
+                        candidates.push(p.parentElement.nextElementSibling);
+
+                    for (var c = 0; c < candidates.length; c++) {
+                        var el = candidates[c];
+                        var txt = (el.textContent || '').trim();
+                        if (!txt) continue;
+                        var spans = el.querySelectorAll('span');
+                        if (spans.length > 0) {
+                            for (var si = 0; si < spans.length; si++) {
+                                var st = (spans[si].textContent || '').trim();
+                                if (st && /^[0-9]/.test(st)) { txt = st; break; }
+                            }
+                        }
+                        var nm = txt.match(/^([0-9][0-9.,]*)\s*([kKmM]?)$/);
+                        if (nm) {
+                            var n = parseFloat(nm[1].replace(/,/g, ''));
+                            var u = (nm[2] || '').toLowerCase();
+                            if (u === 'k') n *= 1000;
+                            else if (u === 'm') n *= 1000000;
+                            return Math.round(n);
+                        }
+                    }
+                }
+                return 0;
+            }
+
+            function findPostCard(link) {
+                var node = link;
+                for (var d = 0; d < 12; d++) {
+                    node = node.parentElement;
+                    if (!node) return null;
+                    if (node.querySelector('svg title')) return node;
+                    if (node.hasAttribute && node.hasAttribute('data-virtualized')) return node;
+                }
+                return null;
+            }
+
+            var items = [];
+            var seen = {};
+            var links = document.querySelectorAll('a[href*="/post/"]');
+
+            for (var i = 0; i < links.length; i++) {
+                var a = links[i];
+                var href = a.getAttribute('href') || '';
+                var m = href.match(/\/@([a-zA-Z0-9._]+)\/post\/([a-zA-Z0-9_-]+)/);
+                if (!m) continue;
+                if (href.indexOf('/media') !== -1) continue;
+                var author = m[1];
+                var postId = m[2];
+                if (seen[postId]) continue;
+                seen[postId] = true;
+
+                var card = findPostCard(a);
+                if (!card) continue;
+
+                var cardText = card.textContent || '';
+                if (cardText.indexOf('Membalas @') !== -1 ||
+                    cardText.indexOf('Replying to @') !== -1) {
+                    continue;
+                }
+
+                var spans = card.querySelectorAll('span[dir="auto"], div[dir="auto"]');
+                var parts = [];
+                for (var s = 0; s < spans.length; s++) {
+                    var v = (spans[s].textContent || '').trim();
+                    if (v && v !== author && v.indexOf('@') !== 0 && v.length > 5) {
+                        if (/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(v)) continue;
+                        parts.push(v);
+                    }
+                }
+                var text = parts.length > 1 ? parts[1] : (parts.length > 0 ? parts[0] : '');
+                if (!text) text = cardText.substring(0, 300);
+
+                var timeEl = card.querySelector('time');
+                var timeText = timeEl ? (timeEl.textContent || '') : '';
+                var datetimeStr = timeEl ? (timeEl.getAttribute('datetime') || '') : '';
+                var timestamp = datetimeStr ? new Date(datetimeStr).getTime() : 0;
+
+                var ageStr = timeText;
+                if (timestamp > 0 && !isNaN(timestamp)) {
+                    var diffSec = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
+                    var mn = Math.floor(diffSec / 60);
+                    var hr = Math.floor(diffSec / 3600);
+                    var day = Math.floor(diffSec / 86400);
+                    if (mn < 60) ageStr = mn + 'm';
+                    else if (hr < 24) ageStr = hr + 'h';
+                    else if (day < 7) ageStr = day + 'd';
+                    else if (day < 30) ageStr = Math.floor(day / 7) + 'w';
+                    else ageStr = Math.floor(day / 30) + 'mo';
+                }
+                if (!ageStr) ageStr = '?';
+
+                var likes = getMetric(card, ['like', 'suka']);
+                var replies = getMetric(card, ['comment', 'reply', 'balas', 'komentar']);
+                var reposts = getMetric(card, ['repost', 'quote']);
+
+                var fullUrl = href.indexOf('http') === 0 ? href : ('https://www.threads.com' + href);
+
+                items.push({
+                    author: author,
+                    postId: postId,
+                    url: fullUrl,
+                    text: text.substring(0, 500),
+                    likes: likes,
+                    replies: replies,
+                    reposts: reposts,
+                    shares: 0,
+                    ageStr: ageStr,
+                    timestamp: timestamp
+                });
+            }
+
+            items.sort(function(a, b) {
+                var scoreA = (a.timestamp / 1000) + (a.likes * 60) + (a.replies * 180);
+                var scoreB = (b.timestamp / 1000) + (b.likes * 60) + (b.replies * 180);
+                return scoreB - scoreA;
+            });
+
+            return JSON.stringify(items);
+        })();
+    """.trimIndent()
 
     private fun processScrapedJson(rawJson: String?, keyword: String, maxLimit: Int) {
         var addedCount = 0
@@ -400,11 +426,11 @@ class ScraperFragment : Fragment() {
                     val replies = obj.optInt("replies", 0)
                     val reposts = obj.optInt("reposts", 0)
                     val shares = obj.optInt("shares", 0)
-                    val ageStr = obj.optString("ageStr", "Baru saja")
+                    val ageStr = obj.optString("ageStr", "?")
 
                     if (author.isBlank() || postId.isBlank()) continue
 
-                    // Deduplication: NEVER comment on duplicate posts
+                    // Strict deduplication
                     if (db.isPostAlreadyProcessed(postId) || db.isPostAlreadyQueued(postId)) {
                         continue
                     }
@@ -416,7 +442,7 @@ class ScraperFragment : Fragment() {
                         postId = postId,
                         postUrl = url,
                         authorUsername = author,
-                        contentText = text.ifBlank { "Postingan Threads oleh @$author terkait $keyword" },
+                        contentText = text.ifBlank { "Postingan @$author: $keyword" },
                         likeCount = likes,
                         replyCount = replies,
                         repostCount = reposts,
@@ -434,9 +460,12 @@ class ScraperFragment : Fragment() {
     }
 
     private fun finishScrape(addedCount: Int, keyword: String) {
+        if (_binding == null) return
+
         binding.progressScraper.visibility = View.GONE
         binding.tvScrapeStatus.visibility = View.GONE
         binding.btnScrape.isEnabled = true
+        binding.cardScraperPreview.visibility = View.GONE
 
         loadQueuedPosts()
 
@@ -465,8 +494,10 @@ class ScraperFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        scraperWebView?.destroy()
-        scraperWebView = null
+        try {
+            binding.liveWebView.stopLoading()
+            binding.liveWebView.loadUrl("about:blank")
+        } catch (_: Exception) {}
         _binding = null
     }
 }
