@@ -33,7 +33,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Pusat Kendali Auto-Comment"
+                    android:text="@string/runner_title"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -96,7 +96,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
                     android:layout_weight="1"
-                    android:hint="Jeda Min (s)">
+                    android:hint="@string/runner_delay_min_hint">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etDelayMin"
@@ -111,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="4dp"
                     android:layout_weight="1"
-                    android:hint="Jeda Max (s)">
+                    android:hint="@string/runner_delay_max_hint">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etDelayMax"
@@ -126,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:layout_weight="1"
-                    android:hint="Cap Harian">
+                    android:hint="@string/runner_daily_cap_hint">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etDailyCap"
@@ -150,7 +150,7 @@
                     android:layout_marginEnd="4dp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/accent_green"
-                    android:text="MULAI"
+                    android:text="@string/runner_btn_start"
                     android:textColor="#FFFFFF"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -164,7 +164,7 @@
                     android:layout_marginHorizontal="4dp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/accent_gold"
-                    android:text="JEDA"
+                    android:text="@string/runner_btn_pause"
                     android:textColor="#FFFFFF"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -178,7 +178,7 @@
                     android:layout_marginStart="4dp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/accent_red"
-                    android:text="STOP"
+                    android:text="@string/runner_btn_stop"
                     android:textColor="#FFFFFF"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -217,7 +217,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Log Eksekusi Real-Time"
+                    android:text="@string/runner_log_title"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -227,7 +227,7 @@
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Hapus Log"
+                    android:text="@string/runner_btn_clear_logs"
                     android:textColor="@color/text_muted"
                     android:textSize="11sp" />
             </LinearLayout>

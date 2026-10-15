@@ -88,11 +88,11 @@ class MainActivity : AppCompatActivity() {
 
     fun updateHeaderAccount() {
         if (prefs.isThreadsLoggedIn) {
-            val user = if (prefs.threadsUsername.isNotBlank()) "@${prefs.threadsUsername}" else "Terkoneksi"
-            binding.chipAccountStatus.text = "● $user"
+            val user = if (prefs.threadsUsername.isNotBlank()) "@${prefs.threadsUsername}" else "@threads"
+            binding.chipAccountStatus.text = getString(R.string.account_logged_in_prefix) + user
             binding.chipAccountStatus.setTextColor(ContextCompat.getColor(this, R.color.accent_green))
         } else {
-            binding.chipAccountStatus.text = "○ Belum Login"
+            binding.chipAccountStatus.text = getString(R.string.account_not_logged_in)
             binding.chipAccountStatus.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))
         }
     }

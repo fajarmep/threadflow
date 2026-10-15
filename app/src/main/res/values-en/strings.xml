@@ -7,15 +7,119 @@
     <string name="nav_report">Reports</string>
     <string name="nav_settings">Settings</string>
 
-    <!-- Settings -->
+    <!-- Header -->
+    <string name="account_not_logged_in">○ Not Logged In</string>
+    <string name="account_logged_in_prefix">● </string>
+
+    <!-- Scraper Tab -->
+    <string name="scraper_title">Viral Threads Scraper</string>
+    <string name="scraper_subtitle">Scrapes authentic Threads root posts based on keywords.</string>
+    <string name="scraper_keyword_hint">Keyword / Topic (e.g. skincare, tech, outfit)</string>
+    <string name="scraper_keyword_error">Enter a keyword / topic</string>
+    <string name="scraper_date_hint">Post Date</string>
+    <string name="scraper_limit_hint">Post Limit</string>
+    <string name="scraper_limit_placeholder">As many as possible</string>
+    <string name="scraper_filter_indo">Indonesian Language Only</string>
+    <string name="scraper_filter_negative">Filter Sensitive / Tragedy / Grief Content</string>
+    <string name="scraper_btn_search">FIND VIRAL POSTS</string>
+    <string name="scraper_status_opening">Opening Threads search with your login session...</string>
+    <string name="scraper_status_loading">Loading Threads search page...</string>
+    <string name="scraper_status_rendering">Rendering Threads posts (Root Posts only)...</string>
+    <string name="scraper_direct_title">Or Enter Direct Threads Link</string>
+    <string name="scraper_direct_hint">https://www.threads.com/@user/post/...</string>
+    <string name="scraper_btn_add">Add</string>
+    <string name="scraper_queue_title">Target Post Queue (%1$d)</string>
+    <string name="scraper_btn_clear">Clear</string>
+    <string name="scraper_toast_cleared">Queue cleared successfully</string>
+    <string name="scraper_toast_removed">Removed from queue</string>
+    <string name="scraper_toast_added">Post @%1$s added to queue!</string>
+    <string name="scraper_toast_exists">This post is already in the queue.</string>
+    <string name="scraper_toast_invalid_url">Invalid URL format. Example: https://www.threads.com/@user/post/xyz</string>
+    <string name="scraper_toast_input_url">Please enter a Threads post URL</string>
+    <string name="scraper_dialog_no_login_title">Notice: Not Logged Into Threads</string>
+    <string name="scraper_dialog_no_login_msg">Direct search on Threads requires an active login session.\n\nOpen Settings -> Login Threads to retrieve live search results accurately.</string>
+    <string name="scraper_dialog_btn_open_settings">Open Settings</string>
+    <string name="scraper_dialog_btn_try_anyway">Try Anyway</string>
+    <string name="scraper_dialog_not_found_title">No Posts Found</string>
+    <string name="scraper_dialog_not_found_msg">Threads search for keyword \'%1$s\' did not return root posts.\n\nTips:\n1. Verify active login in Settings tab.\n2. Try a broader keyword or paste a link directly.</string>
+    <string name="scraper_toast_success">Successfully added %1$d authentic Threads posts to queue!</string>
+    <string name="btn_view_post">View Post</string>
+    <string name="btn_remove">Remove</string>
+
+    <!-- Campaign Tab -->
+    <string name="campaign_title">Affiliate Campaign Settings</string>
+    <string name="campaign_subtitle">AI crafts Comment 1 (Value) and Comment 2 (CTA + Link) under 500 chars.</string>
+    <string name="campaign_desc_hint">Product / Affiliate Solution Description (Can be very long)</string>
+    <string name="campaign_link_hint">Affiliate Link (Shopee, Amazon, TikTok, Website)</string>
+    <string name="campaign_tone_hint">AI Copywriting Tone</string>
+    <string name="campaign_media_title">Media Attachments (Photo / Video)</string>
+    <string name="campaign_media_empty">No media selected (Optional)</string>
+    <string name="campaign_media_count">%1$d media selected</string>
+    <string name="campaign_media_prev_count">%1$d media previously selected</string>
+    <string name="campaign_btn_pick">Browse</string>
+    <string name="campaign_btn_simulate">Simulate AI</string>
+    <string name="campaign_btn_save">Save</string>
+    <string name="campaign_toast_saved">Campaign settings saved successfully</string>
+    <string name="campaign_toast_fill_desc">Please enter product description first</string>
+    <string name="campaign_sim_title">AI Copy Simulation (2-Tier)</string>
+    <string name="campaign_sim_connecting">Connecting to AI model to generate draft comments...</string>
+    <string name="campaign_sim_result_title">AI Comments Preview (2-Tier)</string>
+    <string name="campaign_sim_failed_title">Simulation Failed</string>
+    <string name="campaign_sim_failed_msg">AI Error: %1$s\n\nPlease verify Base URL, API Key, and Model name in Settings.</string>
+
+    <!-- Runner Tab -->
+    <string name="runner_title">Auto-Comment Control Center</string>
+    <string name="runner_queue_info">Queue: %1$d / %2$d posts</string>
+    <string name="runner_daily_info">Today: %1$d / %2$d posts</string>
+    <string name="runner_delay_min_hint">Min Delay (s)</string>
+    <string name="runner_delay_max_hint">Max Delay (s)</string>
+    <string name="runner_daily_cap_hint">Daily Cap</string>
+    <string name="runner_btn_start">START</string>
+    <string name="runner_btn_pause">PAUSE</string>
+    <string name="runner_btn_resume">RESUME</string>
+    <string name="runner_btn_stop">STOP</string>
+    <string name="runner_log_title">Real-Time Execution Log</string>
+    <string name="runner_btn_clear_logs">Clear Logs</string>
+    <string name="runner_toast_started">Runner started in background</string>
+    <string name="runner_toast_stopped">Runner stopped</string>
+
+    <!-- Report Tab -->
+    <string name="report_title">Comment History &amp; Reports</string>
+    <string name="report_btn_export">Export CSV</string>
+    <string name="report_stat_success">Success</string>
+    <string name="report_stat_failed">Failed / Partial</string>
+    <string name="report_empty_export">No reports to export</string>
+    <string name="report_chooser_title">Share / Export CSV Report</string>
+
+    <!-- Settings Tab -->
     <string name="settings_threads_account">Threads Account</string>
+    <string name="settings_session_active">Active Session: %1$s\nSession cookies securely saved for threads.com &amp; threads.net.</string>
+    <string name="settings_session_empty">Not logged in to Threads. Please log in to start auto-commenting.</string>
     <string name="settings_login_threads">Login to Threads</string>
     <string name="settings_switch_account">Switch Account</string>
     <string name="settings_logout">Logout</string>
+    <string name="settings_toast_logout">Logged out from Threads</string>
+    <string name="settings_edit_username_title">Change Threads Username</string>
+    <string name="settings_edit_username_hint">Username without @</string>
     <string name="settings_ai_config">AI Configuration (LLM API)</string>
+    <string name="settings_base_url_hint">Base URL (OpenAI / OpenRouter / Groq / 9Router)</string>
+    <string name="settings_api_key_hint">API Key</string>
+    <string name="settings_model_hint">Model Name (e.g. gpt-4o-mini, ag/gemini-3.8-flash)</string>
     <string name="settings_test_connection">Test Connection</string>
     <string name="settings_save">Save</string>
-    <string name="settings_language">App Language</string>
+    <string name="settings_toast_saved">AI settings saved successfully</string>
+    <string name="settings_test_testing_title">Testing AI Connection</string>
+    <string name="settings_test_testing_msg">Connecting to: %1$s\nModel: %2$s...</string>
+    <string name="settings_test_success_title">Connection Succeeded!</string>
+    <string name="settings_test_failed_title">Connection Failed</string>
+    <string name="settings_language">App Language / Bahasa</string>
     <string name="settings_data_management">Data Management</string>
     <string name="settings_clear_reports">Clear All Report History</string>
+    <string name="settings_dialog_clear_title">Clear All Reports?</string>
+    <string name="settings_dialog_clear_msg">This will permanently delete all comment execution records.</string>
+    <string name="settings_toast_cleared">Report history cleared successfully</string>
+    <string name="dialog_btn_cancel">Cancel</string>
+    <string name="dialog_btn_delete">Delete</string>
+    <string name="dialog_btn_ok">OK</string>
+    <string name="dialog_btn_close">Close</string>
 </resources>

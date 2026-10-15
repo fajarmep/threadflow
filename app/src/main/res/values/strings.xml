@@ -7,15 +7,119 @@
     <string name="nav_report">Laporan</string>
     <string name="nav_settings">Pengaturan</string>
 
-    <!-- Settings -->
+    <!-- Header -->
+    <string name="account_not_logged_in">○ Belum Login</string>
+    <string name="account_logged_in_prefix">● </string>
+
+    <!-- Scraper Tab -->
+    <string name="scraper_title">Pencarian Postingan Viral Threads</string>
+    <string name="scraper_subtitle">Mengambil postingan asli Threads (Root Post) sesuai topik.</string>
+    <string name="scraper_keyword_hint">Kata Kunci / Topik (cth: skincare, kuliner, outfit)</string>
+    <string name="scraper_keyword_error">Masukkan kata kunci / topik</string>
+    <string name="scraper_date_hint">Tanggal Post</string>
+    <string name="scraper_limit_hint">Limit Post</string>
+    <string name="scraper_limit_placeholder">Sebanyak mungkin</string>
+    <string name="scraper_filter_indo">Hanya Bahasa Indonesia</string>
+    <string name="scraper_filter_negative">Saring Konten Sensitif / Duka / Bencana</string>
+    <string name="scraper_btn_search">CARI POSTINGAN VIRAL</string>
+    <string name="scraper_status_opening">Membuka pencarian Threads dengan sesi login Anda...</string>
+    <string name="scraper_status_loading">Memuat halaman Threads...</string>
+    <string name="scraper_status_rendering">Merender postingan Threads (hanya Root Post)...</string>
+    <string name="scraper_direct_title">Atau Masukkan Tautan Threads Langsung</string>
+    <string name="scraper_direct_hint">https://www.threads.com/@user/post/...</string>
+    <string name="scraper_btn_add">Tambah</string>
+    <string name="scraper_queue_title">Antrean Postingan Target (%1$d)</string>
+    <string name="scraper_btn_clear">Bersihkan</string>
+    <string name="scraper_toast_cleared">Antrean berhasil dibersihkan</string>
+    <string name="scraper_toast_removed">Dihapus dari antrean</string>
+    <string name="scraper_toast_added">Postingan @%1$s ditambahkan ke antrean!</string>
+    <string name="scraper_toast_exists">Postingan ini sudah ada di antrean.</string>
+    <string name="scraper_toast_invalid_url">Format URL tidak valid. Contoh: https://www.threads.com/@user/post/xyz</string>
+    <string name="scraper_toast_input_url">Masukkan URL postingan Threads</string>
+    <string name="scraper_dialog_no_login_title">Perhatian: Belum Login Threads</string>
+    <string name="scraper_dialog_no_login_msg">Pencarian postingan langsung di Threads memerlukan sesi login aktif.\n\nBuka tab Pengaturan -> Login Threads agar dapat mengambil data pencarian Threads secara akurat.</string>
+    <string name="scraper_dialog_btn_open_settings">Buka Pengaturan</string>
+    <string name="scraper_dialog_btn_try_anyway">Coba Tetap Cari</string>
+    <string name="scraper_dialog_not_found_title">Tidak Ada Postingan Ditemukan</string>
+    <string name="scraper_dialog_not_found_msg">Pencarian Threads untuk kata kunci \'%1$s\' belum menemukan postingan root.\n\nTips:\n1. Pastikan sesi login Threads aktif di tab Pengaturan.\n2. Coba kata kunci yang lebih umum atau gunakan kartu Tautan Langsung.</string>
+    <string name="scraper_toast_success">Berhasil menambahkan %1$d postingan asli Threads ke antrean!</string>
+    <string name="btn_view_post">Buka Postingan</string>
+    <string name="btn_remove">Hapus</string>
+
+    <!-- Campaign Tab -->
+    <string name="campaign_title">Pengaturan Konten Afiliasi</string>
+    <string name="campaign_subtitle">AI akan merangkai Komentar 1 (Edukasi) dan Komentar 2 (CTA + Link) di bawah 500 karakter.</string>
+    <string name="campaign_desc_hint">Deskripsi Produk / Solusi Afiliasi (Bisa sangat panjang)</string>
+    <string name="campaign_link_hint">Link Afiliasi (Shopee, Tokopedia, TikTok, Web)</string>
+    <string name="campaign_tone_hint">Gaya Bahasa / Tone AI</string>
+    <string name="campaign_media_title">Lampiran Media (Foto / Video)</string>
+    <string name="campaign_media_empty">Belum ada media dipilih (Opsional)</string>
+    <string name="campaign_media_count">%1$d media dipilih</string>
+    <string name="campaign_media_prev_count">%1$d media dipilih sebelumnya</string>
+    <string name="campaign_btn_pick">Pilih</string>
+    <string name="campaign_btn_simulate">Simulasi AI</string>
+    <string name="campaign_btn_save">Simpan</string>
+    <string name="campaign_toast_saved">Pengaturan kampanye berhasil disimpan</string>
+    <string name="campaign_toast_fill_desc">Isi deskripsi produk terlebih dahulu</string>
+    <string name="campaign_sim_title">Simulasi AI Copy (2-Tier)</string>
+    <string name="campaign_sim_connecting">Sedang menghubungi model AI untuk menghasilkan draf komentar...</string>
+    <string name="campaign_sim_result_title">Preview Komentar AI (2-Tier)</string>
+    <string name="campaign_sim_failed_title">Simulasi Gagal</string>
+    <string name="campaign_sim_failed_msg">Error AI: %1$s\n\nPastikan Base URL, API Key, dan nama Model sudah benar di tab Pengaturan.</string>
+
+    <!-- Runner Tab -->
+    <string name="runner_title">Pusat Kendali Auto-Comment</string>
+    <string name="runner_queue_info">Antrean: %1$d / %2$d post</string>
+    <string name="runner_daily_info">Hari ini: %1$d / %2$d post</string>
+    <string name="runner_delay_min_hint">Jeda Min (s)</string>
+    <string name="runner_delay_max_hint">Jeda Max (s)</string>
+    <string name="runner_daily_cap_hint">Cap Harian</string>
+    <string name="runner_btn_start">MULAI</string>
+    <string name="runner_btn_pause">JEDA</string>
+    <string name="runner_btn_resume">LANJUT</string>
+    <string name="runner_btn_stop">STOP</string>
+    <string name="runner_log_title">Log Eksekusi Real-Time</string>
+    <string name="runner_btn_clear_logs">Hapus Log</string>
+    <string name="runner_toast_started">Runner dimulai di background</string>
+    <string name="runner_toast_stopped">Runner dihentikan</string>
+
+    <!-- Report Tab -->
+    <string name="report_title">Laporan &amp; Riwayat Komentar</string>
+    <string name="report_btn_export">Ekspor CSV</string>
+    <string name="report_stat_success">Komentar Sukses</string>
+    <string name="report_stat_failed">Gagal / Parsial</string>
+    <string name="report_empty_export">Belum ada laporan untuk diekspor</string>
+    <string name="report_chooser_title">Bagikan / Ekspor Laporan CSV</string>
+
+    <!-- Settings Tab -->
     <string name="settings_threads_account">Akun Threads</string>
+    <string name="settings_session_active">Sesi Aktif: %1$s\nCookie sesi tersimpan aman di threads.com &amp; threads.net.</string>
+    <string name="settings_session_empty">Belum login akun Threads. Silakan login untuk memulai auto-comment.</string>
     <string name="settings_login_threads">Login Threads</string>
     <string name="settings_switch_account">Ganti Akun</string>
     <string name="settings_logout">Logout</string>
+    <string name="settings_toast_logout">Berhasil logout dari Threads</string>
+    <string name="settings_edit_username_title">Ubah Username Threads</string>
+    <string name="settings_edit_username_hint">Username tanpa tanda @</string>
     <string name="settings_ai_config">Konfigurasi AI (LLM API)</string>
+    <string name="settings_base_url_hint">Base URL (OpenAI / OpenRouter / Groq / 9Router)</string>
+    <string name="settings_api_key_hint">API Key</string>
+    <string name="settings_model_hint">Model Name (cth: gpt-4o-mini, ag/gemini-3.8-flash)</string>
     <string name="settings_test_connection">Test Koneksi</string>
     <string name="settings_save">Simpan</string>
+    <string name="settings_toast_saved">Pengaturan AI berhasil disimpan</string>
+    <string name="settings_test_testing_title">Menguji Koneksi AI</string>
+    <string name="settings_test_testing_msg">Menghubungi endpoint: %1$s\nModel: %2$s...</string>
+    <string name="settings_test_success_title">Koneksi Sukses!</string>
+    <string name="settings_test_failed_title">Koneksi Gagal</string>
     <string name="settings_language">Bahasa Aplikasi / Language</string>
     <string name="settings_data_management">Manajemen Data</string>
     <string name="settings_clear_reports">Hapus Semua Riwayat Laporan</string>
+    <string name="settings_dialog_clear_title">Hapus Semua Laporan?</string>
+    <string name="settings_dialog_clear_msg">Tindakan ini akan menghapus seluruh catatan riwayat komentar secara permanen.</string>
+    <string name="settings_toast_cleared">Riwayat laporan berhasil dihapus</string>
+    <string name="dialog_btn_cancel">Batal</string>
+    <string name="dialog_btn_delete">Hapus</string>
+    <string name="dialog_btn_ok">OK</string>
+    <string name="dialog_btn_close">Tutup</string>
 </resources>

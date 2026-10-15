@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.fajar.threadflow.R
 import com.fajar.threadflow.data.DatabaseHelper
 import com.fajar.threadflow.databinding.FragmentReportBinding
 import java.io.File
@@ -48,7 +49,7 @@ class ReportFragment : Fragment() {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(report.postUrl))
                 startActivity(intent)
             } catch (e: Exception) {
-                Toast.makeText(context, "Tidak dapat membuka link: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -75,7 +76,7 @@ class ReportFragment : Fragment() {
     private fun exportCsv() {
         val reports = db.getAllReports()
         if (reports.isEmpty()) {
-            Toast.makeText(context, "Belum ada laporan untuk diekspor", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.report_empty_export), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -106,9 +107,9 @@ class ReportFragment : Fragment() {
                 putExtra(Intent.EXTRA_STREAM, uri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            startActivity(Intent.createChooser(shareIntent, "Bagikan / Ekspor Laporan CSV"))
+            startActivity(Intent.createChooser(shareIntent, getString(R.string.report_chooser_title)))
         } catch (e: Exception) {
-            Toast.makeText(context, "Gagal ekspor: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Export error: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 

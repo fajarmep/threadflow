@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.fajar.threadflow.R
 import com.fajar.threadflow.data.AppPreferences
 import com.fajar.threadflow.data.DatabaseHelper
 import com.fajar.threadflow.databinding.FragmentRunnerBinding
@@ -69,7 +70,7 @@ class RunnerFragment : Fragment() {
             } else {
                 requireContext().startService(intent)
             }
-            Toast.makeText(context, "Runner dimulai di background", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.runner_toast_started), Toast.LENGTH_SHORT).show()
         }
 
         binding.btnPause.setOnClickListener {
@@ -89,7 +90,7 @@ class RunnerFragment : Fragment() {
                 action = CommentRunnerService.ACTION_STOP
             }
             requireContext().startService(intent)
-            Toast.makeText(context, "Runner dihentikan", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.runner_toast_stopped), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -111,21 +112,21 @@ class RunnerFragment : Fragment() {
                     binding.chipRunnerStatus.chipBackgroundColor = ColorStateList.valueOf(Color.parseColor("#10B981"))
                     binding.btnStart.isEnabled = false
                     binding.btnPause.isEnabled = true
-                    binding.btnPause.text = "JEDA"
+                    binding.btnPause.text = getString(R.string.runner_btn_pause)
                     binding.btnStop.isEnabled = true
                 }
                 RunnerEvents.STATE_PAUSED -> {
                     binding.chipRunnerStatus.chipBackgroundColor = ColorStateList.valueOf(Color.parseColor("#F59E0B"))
                     binding.btnStart.isEnabled = false
                     binding.btnPause.isEnabled = true
-                    binding.btnPause.text = "LANJUT"
+                    binding.btnPause.text = getString(R.string.runner_btn_resume)
                     binding.btnStop.isEnabled = true
                 }
                 else -> {
                     binding.chipRunnerStatus.chipBackgroundColor = ColorStateList.valueOf(Color.parseColor("#64748B"))
                     binding.btnStart.isEnabled = true
                     binding.btnPause.isEnabled = false
-                    binding.btnPause.text = "JEDA"
+                    binding.btnPause.text = getString(R.string.runner_btn_pause)
                     binding.btnStop.isEnabled = false
                 }
             }
@@ -140,10 +141,10 @@ class RunnerFragment : Fragment() {
             if (total > 0) {
                 binding.progressBarRunner.max = total
                 binding.progressBarRunner.progress = cur
-                binding.tvProgressText.text = "Antrean: $cur / $total post"
+                binding.tvProgressText.text = getString(R.string.runner_queue_info, cur, total)
             } else {
                 binding.progressBarRunner.progress = 0
-                binding.tvProgressText.text = "Antrean: 0 / 0 post"
+                binding.tvProgressText.text = getString(R.string.runner_queue_info, 0, 0)
             }
             updateDailyInfo()
         }
@@ -152,7 +153,7 @@ class RunnerFragment : Fragment() {
     private fun updateDailyInfo() {
         if (_binding == null) return
         val today = db.getTodayReportCount()
-        binding.tvDailyCapInfo.text = "Hari ini: $today / ${prefs.dailySafetyCap} post"
+        binding.tvDailyCapInfo.text = getString(R.string.runner_daily_info, today, prefs.dailySafetyCap)
     }
 
     override fun onResume() {

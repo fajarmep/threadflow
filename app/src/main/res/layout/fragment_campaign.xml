@@ -30,7 +30,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pengaturan Konten Afiliasi"
+                    android:text="@string/campaign_title"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -39,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="AI akan merangkai Komentar 1 (Edukasi) dan Komentar 2 (CTA + Link) secara otomatis."
+                    android:text="@string/campaign_subtitle"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
 
@@ -49,7 +49,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:hint="Deskripsi Produk / Solusi Afiliasi">
+                    android:hint="@string/campaign_desc_hint">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etProductDesc"
@@ -66,7 +66,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:hint="Link Afiliasi (Shopee, Tokopedia, TikTok, Web)">
+                    android:hint="@string/campaign_link_hint">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etAffiliateLink"
@@ -81,7 +81,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:hint="Gaya Bahasa / Tone AI">
+                    android:hint="@string/campaign_tone_hint">
 
                     <AutoCompleteTextView
                         android:id="@+id/actvTone"
@@ -109,7 +109,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Lampiran Media (Foto / Video)"
+                            android:text="@string/campaign_media_title"
                             android:textColor="@color/text_primary"
                             android:textSize="13sp"
                             android:textStyle="bold" />
@@ -119,7 +119,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Belum ada media dipilih (Opsional)"
+                            android:text="@string/campaign_media_empty"
                             android:textColor="@color/text_muted"
                             android:textSize="11sp" />
                     </LinearLayout>
@@ -129,7 +129,7 @@
                         style="@style/Widget.Material3.Button.TonalButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Pilih"
+                        android:text="@string/campaign_btn_pick"
                         app:cornerRadius="10dp"
                         app:icon="@drawable/ic_add_photo" />
                 </LinearLayout>
@@ -147,7 +147,7 @@
                         android:layout_height="50dp"
                         android:layout_marginEnd="6dp"
                         android:layout_weight="1"
-                        android:text="Simulasi AI"
+                        android:text="@string/campaign_btn_simulate"
                         android:textSize="13sp"
                         app:cornerRadius="12dp"
                         app:icon="@drawable/ic_sparkle" />
@@ -158,7 +158,7 @@
                         android:layout_height="50dp"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:text="Simpan"
+                        android:text="@string/campaign_btn_save"
                         android:textSize="13sp"
                         app:cornerRadius="12dp" />
                 </LinearLayout>

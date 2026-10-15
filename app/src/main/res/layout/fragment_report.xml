@@ -33,7 +33,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Laporan &amp; Riwayat Komentar"
+                    android:text="@string/report_title"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -43,7 +43,7 @@
                     style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:text="Ekspor CSV"
+                    android:text="@string/report_btn_export"
                     android:textSize="12sp"
                     app:cornerRadius="10dp" />
             </LinearLayout>
@@ -76,7 +76,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Komentar Sukses"
+                        android:text="@string/report_stat_success"
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -103,7 +103,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Gagal / Parsial"
+                        android:text="@string/report_stat_failed"
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
                 </LinearLayout>

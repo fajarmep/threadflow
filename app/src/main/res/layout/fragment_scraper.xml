@@ -31,7 +31,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pencarian Postingan Viral Threads"
+                    android:text="@string/scraper_title"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -40,7 +40,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="Mengambil postingan asli Threads sesuai kata kunci dan filter."
+                    android:text="@string/scraper_subtitle"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
 
@@ -50,7 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:hint="Kata Kunci / Topik (cth: skincare, kuliner, outfit)">
+                    android:hint="@string/scraper_keyword_hint">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etKeyword"
@@ -72,7 +72,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
                         android:layout_weight="1"
-                        android:hint="Tanggal Post">
+                        android:hint="@string/scraper_date_hint">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etDate"
@@ -82,6 +82,7 @@
                             android:inputType="none" />
                     </com.google.android.material.textfield.TextInputLayout>
 
+                    <!-- Limit Post without overlapping hint/placeholder -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/layoutLimit"
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -89,13 +90,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_weight="1"
-                        android:hint="Limit Post">
+                        android:hint="@string/scraper_limit_hint"
+                        app:placeholderText="@string/scraper_limit_placeholder">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etLimit"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Sebanyak mungkin"
                             android:inputType="number" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
@@ -107,7 +108,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:checked="true"
-                    android:text="Hanya Bahasa Indonesia"
+                    android:text="@string/scraper_filter_indo"
                     android:textColor="@color/text_primary" />
 
                 <com.google.android.material.materialswitch.MaterialSwitch
@@ -116,7 +117,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:checked="true"
-                    android:text="Saring Konten Sensitif / Duka / Bencana"
+                    android:text="@string/scraper_filter_negative"
                     android:textColor="@color/text_primary" />
 
                 <com.google.android.material.button.MaterialButton
@@ -124,7 +125,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
                     android:layout_marginTop="16dp"
-                    android:text="CARI POSTINGAN VIRAL"
+                    android:text="@string/scraper_btn_search"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     app:cornerRadius="12dp"
@@ -171,7 +172,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Atau Masukkan Tautan Threads Langsung"
+                    android:text="@string/scraper_direct_title"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -188,7 +189,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
                         android:layout_weight="1"
-                        android:hint="https://www.threads.net/@user/post/...">
+                        android:hint="@string/scraper_direct_hint">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etDirectUrl"
@@ -202,7 +203,7 @@
                         style="@style/Widget.Material3.Button.TonalButton"
                         android:layout_width="wrap_content"
                         android:layout_height="54dp"
-                        android:text="Tambah"
+                        android:text="@string/scraper_btn_add"
                         app:cornerRadius="10dp" />
                 </LinearLayout>
 
@@ -232,7 +233,7 @@
                 style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Bersihkan"
+                android:text="@string/scraper_btn_clear"
                 android:textColor="@color/accent_red"
                 android:textSize="12sp" />
         </LinearLayout>
