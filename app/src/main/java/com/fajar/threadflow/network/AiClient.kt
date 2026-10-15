@@ -80,11 +80,18 @@ class AiClient {
             val cleanUrl = resolveEndpoint(baseUrl)
 
             val prompt = """
-                Kamu adalah copywriter profesional untuk media sosial Threads.
-                Target Postingan dari @$author:
+                Kamu adalah copywriter profesional kelas dunia untuk media sosial Threads (Meta).
+                
+                ATURAN SISTEM THREADS:
+                Threads memiliki batas ketat maksimal 500 karakter per komentar/reply.
+                Jika melebihi 500 karakter, Threads akan menolak postingan.
+                
+                DATA TARGET:
+                Postingan Target dari @$author:
                 "$postContent"
 
-                Informasi Produk Afiliasi:
+                DATA PRODUK DARI PENGGUNA:
+                Deskripsi Produk Mentah:
                 "$productDesc"
 
                 Link Afiliasi:
@@ -92,12 +99,21 @@ class AiClient {
 
                 Gaya Bahasa / Tone: $tone
 
-                Tugas: Buat 2 tingkat komentar berbahasa Indonesia:
-                1. "comment1": Komentar utama bernilai edukatif, membagikan insight/pengetahuan yang relevan dengan topik postingan di atas dan secara halus menyinggung solusi masalah. DILARANG MENYEBUTKAN LINK/URL di komentar 1. Jangan terlihat seperti iklan hard-selling, buat natural agar orang teredukasi dan suka.
-                2. "comment2": Komentar balasan (reply) untuk komentar 1. Berisi ajakan menarik (Call To Action), rekomendasi produk spesifik yang sudah dijelaskan, dan wajib sertakan link afiliasi: $affiliateLink.
+                INSTRUKSI KHUSUS:
+                1. Deskripsi produk di atas bisa jadi sangat panjang dan detail. JANGAN salin semuanya! Ekstrak poin inti masalah, manfaat terbesar (USP), dan kaitkan secara cerdas dengan topik postingan target di atas.
+                2. Buat teks yang singkat, padat, menarik, dan tidak bertele-tele.
+                3. "comment1" (KOMENTAR UTAMA):
+                   - Panjang WAJIB antara 180 hingga 320 karakter (jangan lebih dari 350 karakter).
+                   - Berikan wawasan / edukasi / tips yang relevan. Singgung solusi secara halus tanpa terlihat jualan mentah.
+                   - DILARANG KERAS menyertakan link/URL apapun di komentar 1.
+                4. "comment2" (KOMENTAR BALASAN):
+                   - Panjang teks pengantar WAJIB singkat (80 hingga 200 karakter) ditambah link afiliasi: $affiliateLink.
+                   - TOTAL panjang comment2 (termasuk link) WAJIB di bawah 450 karakter.
+                   - Buat ajakan bertindak (CTA) yang menggugah rasa penasaran pembaca.
 
-                Format output WAJIB HANYA JSON murni tanpa pembuka/penutup markdown:
-                {"comment1": "teks komentar 1", "comment2": "teks komentar 2"}
+                OUTPUT:
+                Wajib balas HANYA format JSON murni tanpa pembuka/penutup markdown:
+                {"comment1": "...", "comment2": "..."}
             """.trimIndent()
 
             val jsonBody = JSONObject().apply {
@@ -106,7 +122,7 @@ class AiClient {
                 put("messages", JSONArray().apply {
                     put(JSONObject().apply {
                         put("role", "system")
-                        put("content", "Kamu selalu membalas dalam format JSON murni dengan key 'comment1' dan 'comment2'.")
+                        put("content", "Kamu selalu membalas dalam format JSON murni dengan key 'comment1' dan 'comment2'. Karakter setiap komentar tidak boleh melebihi 400 karakter.")
                     })
                     put(JSONObject().apply {
                         put("role", "user")
@@ -136,8 +152,12 @@ class AiClient {
                 val jsonStr = extractJsonObject(rawContent)
 
                 val jsonResult = JSONObject(jsonStr)
-                val c1 = jsonResult.optString("comment1", "").trim()
-                val c2 = jsonResult.optString("comment2", "").trim()
+                var c1 = jsonResult.optString("comment1", "").trim()
+                var c2 = jsonResult.optString("comment2", "").trim()
+
+                // Programmatic safety guard against Threads 500-char limit
+                c1 = enforceLimit(c1, 480)
+                c2 = enforceLimit(c2, 480)
 
                 if (c1.isNotBlank() && c2.isNotBlank()) {
                     Result.success(Pair(c1, c2))
@@ -150,11 +170,20 @@ class AiClient {
         }
     }
 
+    private fun enforceLimit(text: String, maxChars: Int): String {
+        if (text.length <= maxChars) return text
+        val cutIndex = text.lastIndexOf(' ', maxChars - 4)
+        return if (cutIndex > 0) {
+            text.substring(0, cutIndex) + "..."
+        } else {
+            text.substring(0, maxChars - 3) + "..."
+        }
+    }
+
     private fun parseCompletionResponse(bodyString: String): String {
         val trimmed = bodyString.trim()
         if (trimmed.isEmpty()) return ""
 
-        // Case 1: Standard JSON starting with '{'
         if (trimmed.startsWith("{")) {
             val root = JSONObject(trimmed)
             if (root.has("error")) {
@@ -181,7 +210,6 @@ class AiClient {
             return trimmed
         }
 
-        // Case 2: Server-Sent Events (SSE) format starting with "data:"
         if (trimmed.contains("data:")) {
             val sb = StringBuilder()
             val lines = trimmed.lines()
