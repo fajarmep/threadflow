@@ -1,0 +1,16 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.ThreadFlow" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_variant</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/on_secondary</item>
+        <item name="android:statusBarColor">@color/bg_canvas</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/bg_canvas</item>
+        <item name="android:windowBackground">@color/bg_canvas</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.ThreadFlow.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.ThreadFlow.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.ThreadFlow.Large</item>
+    </style>
+</resources>

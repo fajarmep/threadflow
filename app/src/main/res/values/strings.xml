@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ThreadFlow</string>
+    <string name="nav_scraper">Scraper</string>
+    <string name="nav_campaign">Kampanye</string>
+    <string name="nav_runner">Runner</string>
+    <string name="nav_report">Laporan</string>
+    <string name="nav_settings">Pengaturan</string>
+</resources>

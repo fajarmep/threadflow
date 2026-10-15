@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_scraper"
+        android:icon="@drawable/ic_nav_scraper"
+        android:title="@string/nav_scraper" />
+    <item
+        android:id="@+id/nav_campaign"
+        android:icon="@drawable/ic_nav_campaign"
+        android:title="@string/nav_campaign" />
+    <item
+        android:id="@+id/nav_runner"
+        android:icon="@drawable/ic_nav_runner"
+        android:title="@string/nav_runner" />
+    <item
+        android:id="@+id/nav_report"
+        android:icon="@drawable/ic_nav_report"
+        android:title="@string/nav_report" />
+    <item
+        android:id="@+id/nav_settings"
+        android:icon="@drawable/ic_nav_settings"
+        android:title="@string/nav_settings" />
+</menu>
