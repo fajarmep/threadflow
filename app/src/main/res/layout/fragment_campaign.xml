@@ -43,12 +43,29 @@
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
 
+                <!-- Product Title Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutTitle"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:hint="@string/campaign_title_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etProductTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapWords" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Product Description Input -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/layoutDesc"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="10dp"
                     android:hint="@string/campaign_desc_hint">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -60,20 +77,40 @@
                         android:maxLines="6" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/layoutLink"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                <!-- Affiliate Link Input + GET Button -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:hint="@string/campaign_link_hint">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etAffiliateLink"
-                        android:layout_width="match_parent"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layoutLink"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:inputType="textUri" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:hint="@string/campaign_link_hint">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etAffiliateLink"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textUri" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnGetProductInfo"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="56dp"
+                        android:text="@string/campaign_get_btn"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="10dp" />
+                </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/layoutTone"

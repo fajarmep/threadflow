@@ -146,8 +146,9 @@ class CommentRunnerService : Service() {
                     model = prefs.aiModel,
                     postContent = post.contentText,
                     author = post.authorUsername,
+                    productTitle = prefs.campaignTitle.ifBlank { "Solusi Produk Berkualitas" },
                     productDesc = prefs.campaignDescription.ifBlank { "Solusi produk berkualitas untuk kebutuhan sehari-hari." },
-                    affiliateLink = prefs.campaignAffiliateLink.ifBlank { "https://threads.net" },
+                    affiliateLink = prefs.campaignAffiliateLink.ifBlank { "https://threads.com" },
                     tone = prefs.campaignTone
                 )
 

@@ -49,8 +49,14 @@
     <!-- Campaign Tab -->
     <string name="campaign_title">Affiliate Campaign Settings</string>
     <string name="campaign_subtitle">AI crafts Comment 1 (Value) and Comment 2 (CTA + Link) under 500 chars.</string>
+    <string name="campaign_title_hint">Product Title (e.g. SnapBack Hat Rockcyber ROCY 40)</string>
     <string name="campaign_desc_hint">Product / Affiliate Solution Description (Can be very long)</string>
     <string name="campaign_link_hint">Affiliate Link (Shopee, Amazon, TikTok, Website)</string>
+    <string name="campaign_get_btn">GET</string>
+    <string name="campaign_toast_get_empty_link">Please enter an affiliate link first</string>
+    <string name="campaign_toast_get_fetching">Fetching product title and description...</string>
+    <string name="campaign_toast_get_success">Product title and description retrieved successfully!</string>
+    <string name="campaign_toast_get_failed">Failed to fetch product details: %1$s</string>
     <string name="campaign_tone_hint">AI Copywriting Tone</string>
     <string name="campaign_media_title">Media Attachments (Photo / Video)</string>
     <string name="campaign_media_empty">No media selected (Optional)</string>

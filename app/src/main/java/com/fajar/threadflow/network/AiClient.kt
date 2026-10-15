@@ -72,6 +72,7 @@ class AiClient {
         model: String,
         postContent: String,
         author: String,
+        productTitle: String,
         productDesc: String,
         affiliateLink: String,
         tone: String
@@ -91,25 +92,21 @@ class AiClient {
                 "$postContent"
 
                 DATA PRODUK DARI PENGGUNA:
-                Deskripsi Produk Mentah:
-                "$productDesc"
-
-                Link Afiliasi:
-                "$affiliateLink"
-
+                Judul Produk: "$productTitle"
+                Deskripsi Produk: "$productDesc"
+                Link Afiliasi: "$affiliateLink"
                 Gaya Bahasa / Tone: $tone
 
                 INSTRUKSI KHUSUS:
-                1. Deskripsi produk di atas bisa jadi sangat panjang dan detail. JANGAN salin semuanya! Ekstrak poin inti masalah, manfaat terbesar (USP), dan kaitkan secara cerdas dengan topik postingan target di atas.
-                2. Buat teks yang singkat, padat, menarik, dan tidak bertele-tele.
-                3. "comment1" (KOMENTAR UTAMA):
+                1. Gunakan Judul Produk dan poin keunggulan utama dalam deskripsi. Teks komentar HARUS sangat jelas, tidak membingungkan, natural, sangat relevan dengan topik postingan target di atas, dan tidak bertele-tele.
+                2. "comment1" (KOMENTAR UTAMA):
                    - Panjang WAJIB antara 180 hingga 320 karakter (jangan lebih dari 350 karakter).
-                   - Berikan wawasan / edukasi / tips yang relevan. Singgung solusi secara halus tanpa terlihat jualan mentah.
+                   - Berikan wawasan / edukasi / tips yang relevan dengan topik postingan target, dan hubungkan solusinya secara halus dengan keunggulan produk ($productTitle).
                    - DILARANG KERAS menyertakan link/URL apapun di komentar 1.
-                4. "comment2" (KOMENTAR BALASAN):
+                3. "comment2" (KOMENTAR BALASAN):
                    - Panjang teks pengantar WAJIB singkat (80 hingga 200 karakter) ditambah link afiliasi: $affiliateLink.
                    - TOTAL panjang comment2 (termasuk link) WAJIB di bawah 450 karakter.
-                   - Buat ajakan bertindak (CTA) yang menggugah rasa penasaran pembaca.
+                   - Buat ajakan bertindak (CTA) yang jelas, to the point, dan meyakinkan.
 
                 OUTPUT:
                 Wajib balas HANYA format JSON murni tanpa pembuka/penutup markdown:
@@ -155,7 +152,6 @@ class AiClient {
                 var c1 = jsonResult.optString("comment1", "").trim()
                 var c2 = jsonResult.optString("comment2", "").trim()
 
-                // Programmatic safety guard against Threads 500-char limit
                 c1 = enforceLimit(c1, 480)
                 c2 = enforceLimit(c2, 480)
 

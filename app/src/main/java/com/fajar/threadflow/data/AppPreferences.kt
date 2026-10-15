@@ -24,6 +24,7 @@ class AppPreferences(context: Context) {
         private const val KEY_FILTER_INDO = "filter_indo"
         private const val KEY_FILTER_NEGATIVE = "filter_negative"
 
+        private const val KEY_CAMP_TITLE = "camp_title"
         private const val KEY_CAMP_DESC = "camp_desc"
         private const val KEY_CAMP_LINK = "camp_link"
         private const val KEY_CAMP_TONE = "camp_tone"
@@ -83,6 +84,10 @@ class AppPreferences(context: Context) {
     var filterNegativeKeywords: Boolean
         get() = prefs.getBoolean(KEY_FILTER_NEGATIVE, true)
         set(value) = prefs.edit().putBoolean(KEY_FILTER_NEGATIVE, value).apply()
+
+    var campaignTitle: String
+        get() = prefs.getString(KEY_CAMP_TITLE, "") ?: ""
+        set(value) = prefs.edit().putString(KEY_CAMP_TITLE, value).apply()
 
     var campaignDescription: String
         get() = prefs.getString(KEY_CAMP_DESC, "") ?: ""

@@ -49,8 +49,14 @@
     <!-- Campaign Tab -->
     <string name="campaign_title">Pengaturan Konten Afiliasi</string>
     <string name="campaign_subtitle">AI akan merangkai Komentar 1 (Edukasi) dan Komentar 2 (CTA + Link) di bawah 500 karakter.</string>
+    <string name="campaign_title_hint">Judul Produk (cth: Topi SnapBack Rockcyber ROCY 40)</string>
     <string name="campaign_desc_hint">Deskripsi Produk / Solusi Afiliasi (Bisa sangat panjang)</string>
     <string name="campaign_link_hint">Link Afiliasi (Shopee, Tokopedia, TikTok, Web)</string>
+    <string name="campaign_get_btn">GET</string>
+    <string name="campaign_toast_get_empty_link">Masukkan link affiliate terlebih dahulu</string>
+    <string name="campaign_toast_get_fetching">Mengambil judul dan deskripsi produk...</string>
+    <string name="campaign_toast_get_success">Judul dan deskripsi produk berhasil diambil!</string>
+    <string name="campaign_toast_get_failed">Gagal mengambil detail produk: %1$s</string>
     <string name="campaign_tone_hint">Gaya Bahasa / Tone AI</string>
     <string name="campaign_media_title">Lampiran Media (Foto / Video)</string>
     <string name="campaign_media_empty">Belum ada media dipilih (Opsional)</string>
