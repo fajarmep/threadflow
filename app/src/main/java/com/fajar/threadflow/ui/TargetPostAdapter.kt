@@ -8,6 +8,7 @@ import com.fajar.threadflow.databinding.ItemTargetPostBinding
 
 class TargetPostAdapter(
     private var items: List<TargetPost>,
+    private val onViewClick: (TargetPost) -> Unit,
     private val onRemoveClick: (TargetPost) -> Unit
 ) : RecyclerView.Adapter<TargetPostAdapter.ViewHolder>() {
 
@@ -31,6 +32,10 @@ class TargetPostAdapter(
             tvLikes.text = "❤️ ${formatCount(item.likeCount)}"
             tvComments.text = "💬 ${formatCount(item.replyCount)}"
             tvReposts.text = "🔁 ${formatCount(item.repostCount)}"
+
+            btnViewPost.setOnClickListener {
+                onViewClick(item)
+            }
 
             btnRemove.setOnClickListener {
                 onRemoveClick(item)
