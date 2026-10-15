@@ -1,7 +1,6 @@
 package com.fajar.threadflow.ui
 
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -27,10 +26,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import java.net.URLEncoder
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
 class ScraperFragment : Fragment() {
 
@@ -64,24 +59,6 @@ class ScraperFragment : Fragment() {
     }
 
     private fun setupUI() {
-        val todayStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        binding.etDate.setText(todayStr)
-
-        binding.etDate.setOnClickListener {
-            val cal = Calendar.getInstance()
-            DatePickerDialog(
-                requireContext(),
-                { _, year, month, dayOfMonth ->
-                    cal.set(year, month, dayOfMonth)
-                    val formatted = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(cal.time)
-                    binding.etDate.setText(formatted)
-                },
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH)
-            ).show()
-        }
-
         binding.switchIndoOnly.isChecked = prefs.filterIndonesianOnly
         binding.switchIndoOnly.setOnCheckedChangeListener { _, isChecked ->
             prefs.filterIndonesianOnly = isChecked
@@ -158,7 +135,6 @@ class ScraperFragment : Fragment() {
             return
         }
 
-        // Support both threads.com and threads.net
         val regex = Regex("https?://(?:www\\.)?threads\\.(?:com|net)/@([a-zA-Z0-9._]+)/post/([a-zA-Z0-9_-]+)")
         val match = regex.find(inputUrl)
         if (match == null) {
@@ -169,7 +145,16 @@ class ScraperFragment : Fragment() {
         val author = match.groupValues[1]
         val postId = match.groupValues[2]
         val cleanUrl = "https://www.threads.com/@$author/post/$postId"
-        val todayStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+        // Deduplication guard
+        if (db.isPostAlreadyProcessed(postId)) {
+            Toast.makeText(context, "Postingan ini sudah pernah dikomentari sebelumnya.", Toast.LENGTH_LONG).show()
+            return
+        }
+        if (db.isPostAlreadyQueued(postId)) {
+            Toast.makeText(context, getString(R.string.scraper_toast_exists), Toast.LENGTH_SHORT).show()
+            return
+        }
 
         val target = TargetPost(
             postId = postId,
@@ -180,7 +165,7 @@ class ScraperFragment : Fragment() {
             replyCount = 0,
             repostCount = 0,
             shareCount = 0,
-            postDate = todayStr
+            postDate = "Baru ditambahkan"
         )
 
         val id = db.insertTargetPost(target)
@@ -188,14 +173,11 @@ class ScraperFragment : Fragment() {
             binding.etDirectUrl.setText("")
             loadQueuedPosts()
             Toast.makeText(context, getString(R.string.scraper_toast_added, author), Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(context, getString(R.string.scraper_toast_exists), Toast.LENGTH_SHORT).show()
         }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun startScrape(keyword: String) {
-        val dateStr = binding.etDate.text?.toString()?.trim() ?: ""
         val limitStr = binding.etLimit.text?.toString()?.trim() ?: ""
         val maxLimit = limitStr.toIntOrNull() ?: 50
 
@@ -232,8 +214,7 @@ class ScraperFragment : Fragment() {
         }
 
         val encoded = URLEncoder.encode(keyword, "UTF-8")
-        // Use threads.com search endpoint
-        val searchUrl = "https://www.threads.com/search/?q=$encoded&filter=recent"
+        val searchUrl = "https://www.threads.com/search?q=$encoded"
 
         scraperWebView?.webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
@@ -244,26 +225,45 @@ class ScraperFragment : Fragment() {
                 binding.tvScrapeStatus.text = getString(R.string.scraper_status_rendering)
 
                 viewLifecycleOwner.lifecycleScope.launch {
-                    delay(3500) // Allow React to hydrate search results
+                    delay(3000)
 
+                    // Scroll down to load search items
                     scraperWebView?.evaluateJavascript("window.scrollBy(0, 1000);", null)
                     delay(1500)
+                    scraperWebView?.evaluateJavascript("window.scrollBy(0, 1000);", null)
+                    delay(1200)
 
                     val extractJs = """
                         (function() {
-                            function parseCount(parent, regex) {
-                                if (!parent) return 0;
-                                var all = parent.querySelectorAll('[aria-label]');
-                                for (var k = 0; k < all.length; k++) {
-                                    var lbl = all[k].getAttribute('aria-label') || '';
-                                    if (lbl.match(regex)) {
-                                        var m = lbl.match(/([0-9.,]+)\s*([kKmM]?)/);
-                                        if (m) {
-                                            var num = parseFloat(m[1].replace(/,/g, '.'));
-                                            var unit = (m[2] || '').toLowerCase();
-                                            if (unit === 'k') num *= 1000;
-                                            else if (unit === 'm') num *= 1000000;
-                                            return Math.round(num);
+                            function extractSvgMetric(card, keywords) {
+                                var svgs = card.querySelectorAll('svg');
+                                for (var s = 0; s < svgs.length; s++) {
+                                    var svg = svgs[s];
+                                    var titleAttr = (svg.getAttribute('title') || svg.getAttribute('aria-label') || '').toLowerCase();
+                                    var titleElem = svg.querySelector('title');
+                                    var titleText = titleElem ? titleElem.innerText.toLowerCase() : '';
+                                    var fullTitle = titleAttr + ' ' + titleText;
+
+                                    var matched = false;
+                                    for (var k = 0; k < keywords.length; k++) {
+                                        if (fullTitle.indexOf(keywords[k]) !== -1) {
+                                            matched = true;
+                                            break;
+                                        }
+                                    }
+                                    if (matched) {
+                                        var sib = svg.nextElementSibling;
+                                        if (!sib && svg.parentElement) sib = svg.parentElement.nextElementSibling;
+                                        if (sib) {
+                                            var txt = (sib.innerText || '').trim();
+                                            var m = txt.match(/([0-9.,]+)\s*([kKmM]?)/);
+                                            if (m) {
+                                                var n = parseFloat(m[1].replace(/,/g, '.'));
+                                                var u = (m[2] || '').toLowerCase();
+                                                if (u === 'k') n *= 1000;
+                                                else if (u === 'm') n *= 1000000;
+                                                return Math.round(n);
+                                            }
                                         }
                                     }
                                 }
@@ -273,6 +273,7 @@ class ScraperFragment : Fragment() {
                             var items = [];
                             var seen = {};
                             var links = document.querySelectorAll('a[href*="/post/"]');
+
                             for (var i = 0; i < links.length; i++) {
                                 var a = links[i];
                                 var href = a.getAttribute('href') || '';
@@ -289,16 +290,20 @@ class ScraperFragment : Fragment() {
                                     card = card.parentElement;
                                     if (card.getAttribute('data-pressable-container') === 'true' || card.tagName === 'ARTICLE') break;
                                 }
-
                                 if (!card) continue;
 
-                                // Filter ONLY ROOT POSTS: skip comments/replies
-                                var cardText = card.innerText || '';
+                                // Filter ONLY ROOT POSTS: strictly skip comments & replies
+                                var cardText = (card.innerText || '');
                                 if (cardText.indexOf('Membalas @') !== -1 || cardText.indexOf('Replying to @') !== -1 ||
                                     cardText.indexOf('Membalas ') === 0 || cardText.indexOf('Replying to ') === 0) {
                                     continue;
                                 }
 
+                                // Skip items with vertical thread connector lines
+                                var connectors = card.querySelectorAll('div[style*="border-left"], div[style*="width: 2px"]');
+                                if (connectors.length > 0) continue;
+
+                                // Extract post content
                                 var text = '';
                                 var spans = card.querySelectorAll('span[dir="auto"], div[dir="auto"]');
                                 var parts = [];
@@ -309,14 +314,35 @@ class ScraperFragment : Fragment() {
                                     }
                                 }
                                 text = parts.join(' ');
-                                if (!text) text = (card.innerText || '').trim();
+                                if (!text) text = cardText;
 
-                                // Extract actual metrics from DOM (zero fake numbers)
-                                var likes = parseCount(card, /suka|like/i);
-                                var replies = parseCount(card, /balas|repl/i);
-                                var reposts = parseCount(card, /kirim ulang|repost/i);
+                                // Post Age from <time> tag
+                                var timeEl = card.querySelector('time');
+                                var timeText = timeEl ? (timeEl.innerText || '') : '';
+                                var datetimeStr = timeEl ? (timeEl.getAttribute('datetime') || '') : '';
+                                var timestamp = datetimeStr ? Date.parse(datetimeStr) : 0;
+
+                                var ageStr = timeText;
+                                if (timestamp > 0) {
+                                    var diffSec = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
+                                    var min = Math.floor(diffSec / 60);
+                                    var hr = Math.floor(diffSec / 3600);
+                                    var day = Math.floor(diffSec / 86400);
+
+                                    if (min < 60) ageStr = min + 'm lalu';
+                                    else if (hr < 24) ageStr = hr + 'j lalu';
+                                    else if (day < 7) ageStr = day + 'h lalu';
+                                    else ageStr = Math.floor(day / 7) + 'mgg lalu';
+                                }
+                                if (!ageStr) ageStr = 'Baru saja';
+
+                                // Extract actual metrics from sibling DOM elements
+                                var likes = extractSvgMetric(card, ['like', 'suka']);
+                                var replies = extractSvgMetric(card, ['comment', 'balas', 'balasan']);
+                                var reposts = extractSvgMetric(card, ['repost', 'kirim']);
 
                                 var fullUrl = href.indexOf('http') === 0 ? href : ('https://www.threads.com' + href);
+
                                 items.push({
                                     author: author,
                                     postId: postId,
@@ -325,15 +351,26 @@ class ScraperFragment : Fragment() {
                                     likes: likes,
                                     replies: replies,
                                     reposts: reposts,
-                                    shares: 0
+                                    shares: 0,
+                                    ageStr: ageStr,
+                                    timestamp: timestamp
                                 });
                             }
+
+                            // Sort: Prioritise fresh & active posts (alive posts first)
+                            items.sort(function(a, b) {
+                                // Combined alive score: recency + engagement activity
+                                var scoreA = (a.timestamp / 1000) + (a.likes * 60) + (a.replies * 180);
+                                var scoreB = (b.timestamp / 1000) + (b.likes * 60) + (b.replies * 180);
+                                return scoreB - scoreA;
+                            });
+
                             return JSON.stringify(items);
                         })();
                     """.trimIndent()
 
                     scraperWebView?.evaluateJavascript(extractJs) { jsonStr ->
-                        processScrapedJson(jsonStr, keyword, dateStr, maxLimit)
+                        processScrapedJson(jsonStr, keyword, maxLimit)
                     }
                 }
             }
@@ -342,7 +379,7 @@ class ScraperFragment : Fragment() {
         scraperWebView?.loadUrl(searchUrl)
     }
 
-    private fun processScrapedJson(rawJson: String?, keyword: String, dateStr: String, maxLimit: Int) {
+    private fun processScrapedJson(rawJson: String?, keyword: String, maxLimit: Int) {
         var addedCount = 0
         try {
             if (rawJson != null && rawJson != "null" && rawJson != "\"[]\"" && rawJson != "[]") {
@@ -363,11 +400,17 @@ class ScraperFragment : Fragment() {
                     val replies = obj.optInt("replies", 0)
                     val reposts = obj.optInt("reposts", 0)
                     val shares = obj.optInt("shares", 0)
+                    val ageStr = obj.optString("ageStr", "Baru saja")
 
                     if (author.isBlank() || postId.isBlank()) continue
 
+                    // Deduplication: NEVER comment on duplicate posts
+                    if (db.isPostAlreadyProcessed(postId) || db.isPostAlreadyQueued(postId)) {
+                        continue
+                    }
+
                     if (binding.switchNegativeFilter.isChecked && threadsClient.isNegative(text)) continue
-                    if (binding.switchIndoOnly.isChecked && !threadsClient.isIndonesian(text) && text.length > 20) continue
+                    if (binding.switchIndoOnly.isChecked && !threadsClient.isIndonesian(text) && text.length > 30) continue
 
                     val target = TargetPost(
                         postId = postId,
@@ -378,7 +421,7 @@ class ScraperFragment : Fragment() {
                         replyCount = replies,
                         repostCount = reposts,
                         shareCount = shares,
-                        postDate = dateStr.ifBlank { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()) }
+                        postDate = ageStr
                     )
 
                     val rowId = db.insertTargetPost(target)

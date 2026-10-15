@@ -44,6 +44,7 @@
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
 
+                <!-- Keyword Input -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/layoutKeyword"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -59,47 +60,22 @@
                         android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <LinearLayout
+                <!-- Post Limit Input (Full Width, Date removed) -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutLimit"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:orientation="horizontal">
+                    android:hint="@string/scraper_limit_hint"
+                    app:placeholderText="@string/scraper_limit_placeholder">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/layoutDate"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etLimit"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:hint="@string/scraper_date_hint">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etDate"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:focusable="false"
-                            android:inputType="none" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <!-- Limit Post without overlapping hint/placeholder -->
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/layoutLimit"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:hint="@string/scraper_limit_hint"
-                        app:placeholderText="@string/scraper_limit_placeholder">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etLimit"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="number" />
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
+                        android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Filters -->
                 <com.google.android.material.materialswitch.MaterialSwitch
@@ -107,7 +83,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:checked="true"
+                    android:checked="false"
                     android:text="@string/scraper_filter_indo"
                     android:textColor="@color/text_primary" />
 

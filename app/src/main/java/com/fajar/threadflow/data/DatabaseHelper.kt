@@ -172,6 +172,17 @@ class DatabaseHelper private constructor(context: Context) :
         }
     }
 
+    fun isPostAlreadyQueued(postId: String): Boolean {
+        val db = readableDatabase
+        val c = db.rawQuery(
+            "SELECT 1 FROM $TABLE_TARGETS WHERE $COL_T_POST_ID = ? AND $COL_T_STATUS = 'QUEUED' LIMIT 1",
+            arrayOf(postId)
+        )
+        c.use {
+            return it.moveToFirst()
+        }
+    }
+
     fun insertReport(report: CommentReport): Long {
         val db = writableDatabase
         val cv = ContentValues().apply {
