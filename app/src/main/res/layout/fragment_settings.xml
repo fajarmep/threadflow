@@ -31,7 +31,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Akun Threads"
+                    android:text="@string/settings_threads_account"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -57,7 +57,7 @@
                         android:layout_height="48dp"
                         android:layout_marginEnd="6dp"
                         android:layout_weight="1"
-                        android:text="Login Threads"
+                        android:text="@string/settings_login_threads"
                         android:textSize="13sp"
                         app:cornerRadius="10dp" />
 
@@ -68,7 +68,7 @@
                         android:layout_height="48dp"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:text="Logout"
+                        android:text="@string/settings_logout"
                         android:textColor="@color/accent_red"
                         android:textSize="13sp"
                         app:cornerRadius="10dp"
@@ -98,7 +98,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Konfigurasi AI (LLM API)"
+                    android:text="@string/settings_ai_config"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -158,7 +158,7 @@
                         android:layout_height="48dp"
                         android:layout_marginEnd="6dp"
                         android:layout_weight="1"
-                        android:text="Test Koneksi"
+                        android:text="@string/settings_test_connection"
                         android:textSize="13sp"
                         app:cornerRadius="10dp" />
 
@@ -168,10 +168,65 @@
                         android:layout_height="48dp"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:text="Simpan"
+                        android:text="@string/settings_save"
                         android:textSize="13sp"
                         app:cornerRadius="10dp" />
                 </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Language Selector Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            app:cardBackgroundColor="@color/surface_card"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/stroke_color"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_language"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <RadioGroup
+                    android:id="@+id/rgLanguage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rbIndonesian"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:checked="true"
+                        android:text="Bahasa Indonesia"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp" />
+
+                    <RadioButton
+                        android:id="@+id/rbEnglish"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="English"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp" />
+                </RadioGroup>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -196,7 +251,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Manajemen Data"
+                    android:text="@string/settings_data_management"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -208,13 +263,26 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:gravity="start|center_vertical"
-                    android:text="Hapus Semua Riwayat Laporan"
+                    android:text="@string/settings_clear_reports"
                     android:textColor="@color/accent_red"
                     app:icon="@drawable/ic_delete"
                     app:iconTint="@color/accent_red" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <!-- App Version Display at the Very Bottom -->
+        <TextView
+            android:id="@+id/tvAppVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
+            android:lineSpacingExtra="3dp"
+            android:text="ThreadFlow v1.0.4 (Build 4)\nAuto Affiliate &amp; Threads Viral Booster"
+            android:textColor="@color/text_muted"
+            android:textSize="12sp" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

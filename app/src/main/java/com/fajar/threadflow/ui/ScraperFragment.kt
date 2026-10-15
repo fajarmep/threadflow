@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
@@ -91,7 +92,6 @@ class ScraperFragment : Fragment() {
             prefs.filterNegativeKeywords = isChecked
         }
 
-        // Adapter with both VIEW (Buka) and REMOVE (Hapus) handlers
         adapter = TargetPostAdapter(
             items = emptyList(),
             onViewClick = { targetPost ->
@@ -200,19 +200,36 @@ class ScraperFragment : Fragment() {
 
         binding.progressScraper.visibility = View.VISIBLE
         binding.tvScrapeStatus.visibility = View.VISIBLE
-        binding.tvScrapeStatus.text = "Membuka pencarian Threads: $keyword..."
+        binding.tvScrapeStatus.text = "Membuka pencarian Threads dengan sesi login Anda..."
         binding.btnScrape.isEnabled = false
+
+        val cookieManager = CookieManager.getInstance()
+        cookieManager.setAcceptCookie(true)
 
         if (scraperWebView == null) {
             scraperWebView = WebView(requireContext()).apply {
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
                 settings.userAgentString = "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
+                cookieManager.setAcceptThirdPartyCookies(this, true)
             }
         }
 
+        // Sync stored login cookies
+        if (prefs.threadsCookie.isNotBlank()) {
+            val parts = prefs.threadsCookie.split(";")
+            for (p in parts) {
+                val cookie = p.trim()
+                if (cookie.isNotEmpty()) {
+                    cookieManager.setCookie("https://www.threads.net", cookie)
+                    cookieManager.setCookie(".threads.net", cookie)
+                }
+            }
+            cookieManager.flush()
+        }
+
         val encoded = URLEncoder.encode(keyword, "UTF-8")
-        val searchUrl = "https://www.threads.net/search?q=$encoded&filter=recent"
+        val searchUrl = "https://www.threads.net/search/?q=$encoded&filter=recent"
 
         scraperWebView?.webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
@@ -220,12 +237,11 @@ class ScraperFragment : Fragment() {
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
-                binding.tvScrapeStatus.text = "Merender postingan (menunggu elemen)..."
+                binding.tvScrapeStatus.text = "Merender postingan Threads..."
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     delay(3500) // Allow React to hydrate search results
 
-                    // Scroll down once to trigger loading
                     scraperWebView?.evaluateJavascript("window.scrollBy(0, 1000);", null)
                     delay(1500)
 
@@ -292,7 +308,6 @@ class ScraperFragment : Fragment() {
         try {
             if (rawJson != null && rawJson != "null" && rawJson != "\"[]\"" && rawJson != "[]") {
                 val clean = if (rawJson.startsWith("\"") && rawJson.endsWith("\"")) {
-                    // Unescape JSON string returned from evaluateJavascript
                     val tokener = org.json.JSONTokener(rawJson)
                     tokener.nextValue().toString()
                 } else rawJson
@@ -308,7 +323,6 @@ class ScraperFragment : Fragment() {
 
                     if (author.isBlank() || postId.isBlank()) continue
 
-                    // Language and Negative filter
                     if (binding.switchNegativeFilter.isChecked && threadsClient.isNegative(text)) continue
                     if (binding.switchIndoOnly.isChecked && !threadsClient.isIndonesian(text) && text.length > 20) continue
 
@@ -328,9 +342,7 @@ class ScraperFragment : Fragment() {
                     if (rowId > 0) addedCount++
                 }
             }
-        } catch (e: Exception) {
-            // parsing error
-        }
+        } catch (_: Exception) {}
 
         finishScrape(addedCount, keyword)
     }
@@ -347,7 +359,7 @@ class ScraperFragment : Fragment() {
         } else {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Tidak Ada Postingan Ditemukan")
-                .setMessage("Pencarian Threads untuk kata kunci '$keyword' belum menemukan hasil.\n\nTips:\n1. Pastikan Anda sudah login akun Threads di tab Pengaturan.\n2. Anda juga dapat memasukkan tautan postingan Threads langsung di kartu 'Tautan Threads Langsung'.")
+                .setMessage("Pencarian Threads untuk kata kunci '$keyword' belum menemukan hasil.\n\nTips:\n1. Pastikan sesi login Threads aktif di tab Pengaturan.\n2. Anda juga dapat memasukkan tautan postingan Threads langsung di kartu 'Tautan Threads Langsung'.")
                 .setPositiveButton("OK", null)
                 .show()
         }

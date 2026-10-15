@@ -28,7 +28,13 @@ class AppPreferences(context: Context) {
         private const val KEY_CAMP_LINK = "camp_link"
         private const val KEY_CAMP_TONE = "camp_tone"
         private const val KEY_CAMP_MEDIA = "camp_media"
+
+        private const val KEY_APP_LANGUAGE = "app_language"
     }
+
+    var appLanguage: String
+        get() = prefs.getString(KEY_APP_LANGUAGE, "id") ?: "id"
+        set(value) = prefs.edit().putString(KEY_APP_LANGUAGE, value).apply()
 
     var threadsCookie: String
         get() = prefs.getString(KEY_THREADS_COOKIE, "") ?: ""

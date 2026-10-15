@@ -1,6 +1,7 @@
 package com.fajar.threadflow.ui
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +14,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.fajar.threadflow.R
 import com.fajar.threadflow.data.AppPreferences
 import com.fajar.threadflow.databinding.ActivityMainBinding
+import com.fajar.threadflow.util.LocaleHelper
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,6 +23,10 @@ class MainActivity : AppCompatActivity() {
 
     private val requestNotificationLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { _ -> }
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +55,7 @@ class MainActivity : AppCompatActivity() {
             override fun createFragment(position: Int): Fragment = fragments[position]
         }
 
-        binding.viewPager.isUserInputEnabled = false // Keep navigation smooth via bottom nav
+        binding.viewPager.isUserInputEnabled = false
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 when (position) {

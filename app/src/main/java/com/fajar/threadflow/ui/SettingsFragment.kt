@@ -3,6 +3,7 @@ package com.fajar.threadflow.ui
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,7 @@ import com.fajar.threadflow.data.AppPreferences
 import com.fajar.threadflow.data.DatabaseHelper
 import com.fajar.threadflow.databinding.FragmentSettingsBinding
 import com.fajar.threadflow.network.AiClient
+import com.fajar.threadflow.util.LocaleHelper
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
@@ -49,12 +51,29 @@ class SettingsFragment : Fragment() {
 
         setupUI()
         updateAccountStatus()
+        displayAppVersion()
     }
 
     private fun setupUI() {
         binding.etAiBaseUrl.setText(prefs.aiBaseUrl)
         binding.etAiApiKey.setText(prefs.aiApiKey)
         binding.etAiModel.setText(prefs.aiModel)
+
+        // Language setup
+        if (prefs.appLanguage == "en") {
+            binding.rbEnglish.isChecked = true
+        } else {
+            binding.rbIndonesian.isChecked = true
+        }
+
+        binding.rgLanguage.setOnCheckedChangeListener { _, checkedId ->
+            val selectedLang = if (checkedId == R.id.rbEnglish) "en" else "id"
+            if (selectedLang != prefs.appLanguage) {
+                prefs.appLanguage = selectedLang
+                LocaleHelper.setLocale(requireContext(), selectedLang)
+                activity?.recreate()
+            }
+        }
 
         binding.btnLoginThreads.setOnClickListener {
             showLoginDialog()
@@ -91,16 +110,27 @@ class SettingsFragment : Fragment() {
         }
     }
 
+    private fun displayAppVersion() {
+        try {
+            val pInfo = requireContext().packageManager.getPackageInfo(requireContext().packageName, 0)
+            val verName = pInfo.versionName
+            val verCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) pInfo.longVersionCode else pInfo.versionCode.toLong()
+            binding.tvAppVersion.text = "ThreadFlow v$verName (Build $verCode)\nAuto Affiliate & Threads Viral Booster"
+        } catch (_: Exception) {
+            binding.tvAppVersion.text = "ThreadFlow v1.0.4\nAuto Affiliate & Threads Viral Booster"
+        }
+    }
+
     private fun updateAccountStatus() {
         if (_binding == null) return
         if (prefs.isThreadsLoggedIn) {
             val user = if (prefs.threadsUsername.isNotBlank()) "@${prefs.threadsUsername}" else "Terkoneksi"
             binding.tvAccountDetail.text = "Sesi Aktif: $user\nCookie sesi tersimpan aman. Tidak perlu login ulang."
-            binding.btnLoginThreads.text = "Ganti Akun"
+            binding.btnLoginThreads.text = getString(R.string.settings_switch_account)
             binding.btnLogoutThreads.visibility = View.VISIBLE
         } else {
             binding.tvAccountDetail.text = "Belum login akun Threads. Silakan login untuk memulai auto-comment."
-            binding.btnLoginThreads.text = "Login Threads"
+            binding.btnLoginThreads.text = getString(R.string.settings_login_threads)
             binding.btnLogoutThreads.visibility = View.GONE
         }
     }

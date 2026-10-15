@@ -1,8 +1,21 @@
 <resources>
     <string name="app_name">ThreadFlow</string>
+    <string name="app_subtitle">Viral Threads &amp; Affiliate Booster</string>
     <string name="nav_scraper">Scraper</string>
     <string name="nav_campaign">Kampanye</string>
     <string name="nav_runner">Runner</string>
     <string name="nav_report">Laporan</string>
     <string name="nav_settings">Pengaturan</string>
+
+    <!-- Settings -->
+    <string name="settings_threads_account">Akun Threads</string>
+    <string name="settings_login_threads">Login Threads</string>
+    <string name="settings_switch_account">Ganti Akun</string>
+    <string name="settings_logout">Logout</string>
+    <string name="settings_ai_config">Konfigurasi AI (LLM API)</string>
+    <string name="settings_test_connection">Test Koneksi</string>
+    <string name="settings_save">Simpan</string>
+    <string name="settings_language">Bahasa Aplikasi / Language</string>
+    <string name="settings_data_management">Manajemen Data</string>
+    <string name="settings_clear_reports">Hapus Semua Riwayat Laporan</string>
 </resources>

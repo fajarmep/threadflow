@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">ThreadFlow</string>
+    <string name="app_subtitle">Viral Threads &amp; Affiliate Booster</string>
+    <string name="nav_scraper">Scraper</string>
+    <string name="nav_campaign">Campaign</string>
+    <string name="nav_runner">Runner</string>
+    <string name="nav_report">Reports</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Settings -->
+    <string name="settings_threads_account">Threads Account</string>
+    <string name="settings_login_threads">Login to Threads</string>
+    <string name="settings_switch_account">Switch Account</string>
+    <string name="settings_logout">Logout</string>
+    <string name="settings_ai_config">AI Configuration (LLM API)</string>
+    <string name="settings_test_connection">Test Connection</string>
+    <string name="settings_save">Save</string>
+    <string name="settings_language">App Language</string>
+    <string name="settings_data_management">Data Management</string>
+    <string name="settings_clear_reports">Clear All Report History</string>
+</resources>
